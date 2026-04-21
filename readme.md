@@ -79,6 +79,10 @@ Through hands-on coding with torch for R and real-world datasets, participants g
 - From-scratch implementations to understand fundamentals, torch for R for practical applications
 - All code and materials provided for independent learning after the course
 
+### Materials
+
+Workshop guides and slides for this training course can be found [here](https://courses.mjandrews.org/deep-learning-r/).
+
 ### Software
 
 Software requirements and installation instructions are in [software.md](software.md).
