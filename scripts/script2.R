@@ -31,7 +31,7 @@ optimizer <- optim_adam(mlp$parameters)
 
 train_loader <- dataloader(train_data, batch_size = 64, shuffle = TRUE)
 
-epochs <- 5
+epochs <- 10
 losses <- c()
 for (epoch in seq_len(epochs)){
   epoch_loss <- 0
@@ -48,3 +48,20 @@ for (epoch in seq_len(epochs)){
   losses <- c(losses, epoch_loss)
 }
 p <- nnf_softmax(mlp(train_data[1]$x), dim=2) |> as.numeric()
+
+test_data <- mnist_dataset(
+  root = 'data', train = FALSE, download = TRUE,
+  transform = transform_to_tensor)
+
+accuracy <- 0
+for (i in seq_along(test_data)) {
+  output <- mlp(test_data[i]$x)
+  accuracy <- accuracy + (output$argmax() == test_data[i]$y)
+} 
+accuracy <- accuracy / length(test_data)
+
+W1 <- as.matrix(mlp$parameters$`1.weight`) # 128 by 784
+w <- W1[1,] # from all the input units TO hidden unit 1
+image(as.matrix(w, nrow=28, ncol=28))
+
+plot(losses, type = 'o')
