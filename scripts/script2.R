@@ -47,3 +47,4 @@ for (epoch in seq_len(epochs)){
   print(epoch_loss)
   losses <- c(losses, epoch_loss)
 }
+p <- nnf_softmax(mlp(train_data[1]$x), dim=2) |> as.numeric()
