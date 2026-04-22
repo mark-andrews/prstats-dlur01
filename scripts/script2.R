@@ -1,14 +1,15 @@
 library(torch)
+library(torchvision)
+
 # Get MNIST data ---------------------------------------------------------
 
-library(torchvision)
-train_dataset <- mnist_dataset(
+train_data <- mnist_dataset(
   root = 'data', train = TRUE, download = TRUE,
   transform = transform_to_tensor)
 
-s <- as.matrix(train_dataset[[4567]]$x[1,])
+s <- as.matrix(train_data[[4567]]$x[1,])
 grid::grid.raster(s, interpolate = F)
-train_dataset[[4567]]$y
+train_data[[4567]]$y
 
 # images are 28 by 28
 
