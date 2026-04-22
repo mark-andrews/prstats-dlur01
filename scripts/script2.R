@@ -1,4 +1,14 @@
 library(torch)
+# Get MNIST data ---------------------------------------------------------
+
+library(torchvision)
+train_dataset <- mnist_dataset(
+  root = 'data', train = TRUE, download = TRUE,
+  transform = transform_to_tensor)
+
+s <- as.matrix(train_dataset[[4567]]$x[1,])
+grid::grid.raster(s, interpolate = F)
+train_dataset[[4567]]$y
 
 # images are 28 by 28
 
@@ -14,16 +24,6 @@ mlp <- nn_sequential(
 )
 
 
-# Get MNIST data ---------------------------------------------------------
-
-library(torchvision)
-train_dataset <- mnist_dataset(
-  root = 'data', train = TRUE, download = TRUE,
-  transform = transform_to_tensor)
-
-s <- as.matrix(train_dataset[[4567]]$x[1,])
-grid::grid.raster(s, interpolate = F)
-train_dataset[[4567]]$y
 
 criterion <- nn_cross_entropy_loss()
 optimizer <- optim_adam(mlp$parameters)
@@ -31,11 +31,18 @@ optimizer <- optim_adam(mlp$parameters)
 train_loader <- dataloader(train_data, batch_size = 64, shuffle = TRUE)
 
 epochs <- 5
+losses <- c()
 for (epoch in seq_len(epochs)){
-  for (batch in train_loader){
+  epoch_loss <- 0
+  coro::loop(
+    for (batch in train_loader){
     optimizer$zero_grad() # zero the gradient
     loss <- criterion(mlp(batch$x), batch$y) # STEP 1: CALCULATE THE LOSS FUNCTION
     loss$backward() # gradient calculation: Autograd. STEP 2: CALCULATE THE GRADIENT
     optimizer$step() # step following the gradient. STEP 3. CHANGE THE PARAMETERS
+    epoch_loss <- epoch_loss + loss$item() # aggregate the loss within each epoch
   }
+)
+  print(epoch_loss)
+  losses <- c(losses, epoch_loss)
 }
